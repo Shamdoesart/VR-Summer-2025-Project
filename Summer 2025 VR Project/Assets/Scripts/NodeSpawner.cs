@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class NodeSpawner : MonoBehaviour
 {
     public GameObject nodePrefab;
+    public GameObject floatingText;
+    public TMP_Text nodeText;
 
     private List<GraphNode> nodes = new List<GraphNode>();
 
@@ -12,9 +16,9 @@ public class NodeSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GraphNode nodeA = CreateNode("A", new Vector3(-1.0f, 1.219f, 2.21f));
-        GraphNode nodeB = CreateNode("B", new Vector3(-0.466f, 1.219f, 2.21f));
-        GraphNode nodeC = CreateNode("C", new Vector3(0.049f, 1.219f, 2.21f));
+        GraphNode nodeA = CreateNode("A", new Vector3(0f, 2f, 2.21f));
+        GraphNode nodeB = CreateNode("B", new Vector3(0f, 1.55f, 2.21f));
+        GraphNode nodeC = CreateNode("C", new Vector3(0f, 1.1f, 2.21f));
 
         nodeA.neighbors.Add(nodeB);
         nodeB.neighbors.Add(nodeC);
@@ -32,6 +36,11 @@ public class NodeSpawner : MonoBehaviour
         graphNode.neighbors = new List<GraphNode>();
 
         return graphNode;
+
+    }
+
+    void CreateNodeText(string name, Vector3 position)  
+    {
 
     }
 

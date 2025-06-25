@@ -5,19 +5,30 @@ using UnityEngine;
 public class DrawConnection : MonoBehaviour
 {
     public Material lineMaterial;
-    public float lineWidth = 0.05f;
+    public float lineWidth = 0.5f;
 
-    void Start()
+void Start()
+{
+    StartCoroutine(DelayDrawConnections());
+}
+
+IEnumerator DelayDrawConnections()
     {
-        GraphNode[] nodes = FindObjectsByType<GraphNode>(FindObjectsSortMode.None);
-        foreach (GraphNode node in nodes)
+    yield return new WaitForSeconds(0.1f); // wait a frame
+
+    GraphNode[] nodes = FindObjectsByType<GraphNode>(FindObjectsSortMode.None);
+    Debug.Log("Found nodes: " + nodes.Length);
+
+    foreach (GraphNode node in nodes)
+    {
+        foreach (GraphNode neighbor in node.neighbors)
         {
-            foreach (GraphNode neighbor in node.neighbors)
-            {
-                CreateLine(node.transform.position, neighbor.transform.position);
-            }
+            CreateLine(node.transform.position, neighbor.transform.position);
         }
     }
+    }
+
+
 
     void CreateLine(Vector3 start, Vector3 end)
     {
@@ -30,8 +41,10 @@ public class DrawConnection : MonoBehaviour
         lr.endWidth = lineWidth;
         lr.useWorldSpace = true;
 
-        
+
         lr.SetPosition(0, start);
         lr.SetPosition(1, end);
+
+        Debug.Log($"Creating line from {start} to {end}");
     }
 }

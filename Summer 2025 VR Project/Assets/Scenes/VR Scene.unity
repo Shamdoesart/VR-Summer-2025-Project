@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 8091ad919e36d314ea6a75d9b2a4e7ac, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -405,7 +405,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lineMaterial: {fileID: 2100000, guid: a75d76c9887c5f844920d6299b319ac5, type: 2}
-  lineWidth: 0.05
+  lineWidth: 0.02
 --- !u!114 &375538108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,6 +420,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodePrefab: {fileID: 2036410893851549073, guid: 1189832c62cc3c14883532827226d29b,
     type: 3}
+  floatingText: {fileID: 0}
+  nodeText: {fileID: 0}
 --- !u!4 &375538109
 Transform:
   m_ObjectHideFlags: 0
@@ -2546,7 +2548,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
