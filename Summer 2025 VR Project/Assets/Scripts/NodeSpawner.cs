@@ -5,98 +5,148 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using UnityEditor.Networking.PlayerConnection;
+using UnityEngine.InputSystem;
 
 public class NodeSpawner : MonoBehaviour
 {
-    //Game Object
-    public GameObject nodePrefab;
-    public GameObject floatingText;
 
-    //Spacing for the grpah
-    public float horizontalSpacing = 2f;
-    public float verticalSpacing = 2f;
-    public float baseHeight = 3f;
+    [Header("CSV Source")]
+    public TextAsset csvFile;   //Drop the File
+
+    [Header("Prefabs")]
+    public GameObject nodePrefab; //Sphere Prefab
+    public GameObject floatingText;//TMP Prefab
+
+    [Header("Layout")]
+    public float horizontalSpacing = 2f; //Left-Right spacing within level
+    public float verticalSpacing = 2f; //Distance between levels
+    public float baseHeight = 3f; //Overall Y offset
 
 
 
-    private Dictionary<string, GraphNode> nodeLookup = new Dictionary<string, GraphNode>();
+    private Dictionary<string, NodeData> nodeLookup = new();
 
 
     // Start is called before the first frame update
     void Start()
     {
-        //Define nodes by level
-        List<List<string>> levels = new List<List<string>>
-        {
-            new List<string>{ "A"},
-            new List<string>{ "B", "C" },
-            new List<string> { "D", "E", "F" }
-        };
+        if (!ParseCsv()) return;
+        SpawnNodesByLevel();
+        BuildConnections();
+    }
 
-        for (int level = 0; level < levels.Count; level++)
+    bool ParseCsv()
+    {
+        if (csvFile == null)
         {
-            List<string> row = levels[level];
-            float startX = -((row.Count - 1) * horizontalSpacing) / 2f;
+            Debug.LogError("NodeSpawner: No CSV file assigned.");
+            return false;
+        }
+        string[] lines = csvFile.text.Split('\n');
+        if (lines.Length < 2)
+        {
+            Debug.LogError("CSV appears empty.");
+            return false;
+        }
+
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string line = lines[i].Trim();
+            if (string.IsNullOrWhiteSpace(line)) continue;
+
+            string[] parts = line.Split(',');
+            if (parts.Length < 4)
+            {
+                Debug.LogWarning($"Bad CSV row: {line}");
+                continue;
+            }
+            NodeData nd = new NodeData
+            {
+                name = parts[0].Trim(),
+                title = parts[1].Trim(),
+                reportsTo = parts[2].Trim(),
+                level = int.Parse(parts[3].Trim())
+            };
+            nodeLookup[nd.name] = nd;
+        }
+        return true;
+    }
+
+    void SpawnNodesByLevel()
+    {
+        Dictionary<int, List<NodeData>> levels = new();
+        foreach (NodeData nd in nodeLookup.Values)
+        {
+            if (!levels.ContainsKey(nd.level)) levels[nd.level] = new List<NodeData>();
+            levels[nd.level].Add(nd);
+        }
+
+        foreach (var kvp in levels)
+        {
+            int level = kvp.Key;
+            List<NodeData> row = kvp.Value;
+            float startX = -((row.Count - 1) * horizontalSpacing / 2f);
 
             for (int i = 0; i < row.Count; i++)
             {
-                string nodeName = row[i];
-                Vector3 position = new Vector3(startX + i * horizontalSpacing, baseHeight + -level * verticalSpacing, 2.21f);
-                GraphNode node = CreateNode(nodeName, position);
-                nodeLookup[nodeName] = node;
-                CreateNodeText(nodeName, position + new Vector3(0, 0.2f, 0)); //Make the text slightly above the node
+                Vector3 pos = new Vector3(
+                    startX + i * horizontalSpacing,
+                    baseHeight + level * verticalSpacing,
+                    2.21f
+                );
+
+                row[i].nodeRef = CreateNode(row[i], pos);
+
+                if (floatingText != null)
+                {
+                    CreateNodeText(row[i].name, pos + new Vector3(0, 0.25f, 0));
+                }
             }
+
         }
-
-        //Making the Node connections
-        Connect("A", "B");
-        Connect("A", "C");
-        Connect("B", "D");
-        Connect("B", "E");
-        Connect("C", "E");
-        Connect("C", "F");
-
-
     }
 
-    GraphNode CreateNode(string name, Vector3 position)
+    GraphNode CreateNode(NodeData data, Vector3 pos)
     {
-        GameObject nodeObj = Instantiate(nodePrefab, position, Quaternion.identity);
-        nodeObj.name = "Node_" + name;
+        GameObject go = Instantiate(nodePrefab, pos, Quaternion.identity, transform);
+        go.name = $"Node_{data.name}";
 
-        GraphNode graphNode = nodeObj.AddComponent<GraphNode>();
-        graphNode.nodeName = name;
-        graphNode.neighbors = new List<GraphNode>();
+        GraphNode gn = go.AddComponent<GraphNode>();
+        gn.nodeName = data.name;
+        gn.neighbors = new List<GraphNode>();
 
-        return graphNode;
-
+        return gn;
     }
 
-    void CreateNodeText(string name, Vector3 position)
+    void CreateNodeText(string name, Vector3 pos)
     {
-        GameObject textObj = Instantiate(floatingText, position, Quaternion.identity);
-        textObj.name = "Label_" + name;
+        GameObject labelObj = Instantiate(floatingText, pos, Quaternion.identity, transform);
+        labelObj.name = $"Label_{name}";
 
-        TMP_Text label = textObj.GetComponent<TMP_Text>();
-        if (label != null)
+        TMP_Text t = labelObj.GetComponent<TMP_Text>();
+        if (t != null)
         {
-            label.text = name;
+            t.text = name;
         }
         else
         {
-            Debug.LogWarning("FloatingText Prefab does not contain a TMP_TExt component.");
+            Debug.LogWarning("FloatingText prefab lacks TMP_Text.");
         }
     }
 
-    void Connect(string from, string to)
+    void BuildConnections()
     {
-        if (nodeLookup.ContainsKey(from) && nodeLookup.ContainsKey(to))
+        foreach (NodeData nd in nodeLookup.Values)
         {
-            nodeLookup[from].neighbors.Add(nodeLookup[to]);
-        }
-        else
-        {
-            Debug.LogWarning($"Failed to connect {from} to {to}- one or both nodes not found.");
+            if (string.IsNullOrWhiteSpace(nd.reportsTo)) continue;
+
+            if (!nodeLookup.TryGetValue(nd.reportsTo, out NodeData boss))
+            {
+                Debug.LogWarning($"Manager '{nd.reportsTo}' not found for '{nd.name}'");
+                continue;
+            }
+
+            boss.nodeRef.neighbors.Add(nd.nodeRef);
         }
     }
 

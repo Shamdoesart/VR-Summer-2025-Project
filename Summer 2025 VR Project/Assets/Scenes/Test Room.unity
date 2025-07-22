@@ -3970,6 +3970,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17d07a7598b283d4ebb7c7b4c58505d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  csvFile: {fileID: 4900000, guid: dcaa0ce785a6ab84982b84d6a6f6004f, type: 3}
   nodePrefab: {fileID: 2036410893851549073, guid: 1189832c62cc3c14883532827226d29b,
     type: 3}
   floatingText: {fileID: 0}
@@ -3985,7 +3986,7 @@ Transform:
   m_GameObject: {fileID: 375538106}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.9452333, y: -2.6302688, z: -17.629929}
+  m_LocalPosition: {x: -3.9452333, y: 2.3, z: -17.629929}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
