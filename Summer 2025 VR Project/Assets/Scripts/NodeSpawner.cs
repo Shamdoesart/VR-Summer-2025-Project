@@ -6,6 +6,7 @@ using TMPro;
 using System;
 using UnityEditor.Networking.PlayerConnection;
 using UnityEngine.InputSystem;
+using Unity.Android.Gradle;
 
 public class NodeSpawner : MonoBehaviour
 {
@@ -89,17 +90,19 @@ public class NodeSpawner : MonoBehaviour
 
             for (int i = 0; i < row.Count; i++)
             {
-                Vector3 pos = new Vector3(
+                Vector3 localPos = new Vector3(
                     startX + i * horizontalSpacing,
                     baseHeight + level * verticalSpacing,
                     2.21f
                 );
 
-                row[i].nodeRef = CreateNode(row[i], pos);
+                Vector3 worldPos = transform.TransformPoint(localPos);
+
+                row[i].nodeRef = CreateNode(row[i], worldPos);
 
                 if (floatingText != null)
                 {
-                    CreateNodeText(row[i].name, pos + new Vector3(0, 0.25f, 0));
+                    CreateNodeText(row[i].name, worldPos + new Vector3(0, 0.25f, 0));
                 }
             }
 
