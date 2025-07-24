@@ -1,0 +1,16 @@
+Name,Title,ReportsTo,Level
+Erik,Founder,,0
+HaleyAnne,COO,Erik,1
+Yash,Apprentice,Erik,1
+Amber,Division Head - Recruiting,Erik,2
+Rob,Division Head - Software Engineering,Erik,2
+Kate,Division Head - Consulting,Erik,2
+Joe,Division Head - VRsify,Erik,2
+Erik the Wise,Recruiter,Amber,3
+Erik the Wise,Software Engineer,Rob,3
+Erik the Wise,Practitioner,Erik,3
+Erik the Wizard,Consultant,Kate,3
+Erik the Wizard,Visualization Specialist,Joe,3
+Erik the Wizard,Division Head - Wizardry,Erik,2
+Iz,Wizard,Erik the Wizard,4
+ShaMarrion,Intern,Joe,3

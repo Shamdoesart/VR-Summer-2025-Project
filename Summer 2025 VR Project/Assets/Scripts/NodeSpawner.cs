@@ -74,40 +74,45 @@ public class NodeSpawner : MonoBehaviour
     }
 
     void SpawnNodesByLevel()
+{
+    Dictionary<int, List<NodeData>> levels = new();
+    foreach (NodeData nd in nodeLookup.Values)
     {
-        Dictionary<int, List<NodeData>> levels = new();
-        foreach (NodeData nd in nodeLookup.Values)
-        {
-            if (!levels.ContainsKey(nd.level)) levels[nd.level] = new List<NodeData>();
-            levels[nd.level].Add(nd);
-        }
+        if (!levels.ContainsKey(nd.level))
+            levels[nd.level] = new List<NodeData>();
+        levels[nd.level].Add(nd);
+    }
 
-        foreach (var kvp in levels)
-        {
-            int level = kvp.Key;
-            List<NodeData> row = kvp.Value;
-            float startX = -((row.Count - 1) * horizontalSpacing / 2f);
+    foreach (var kvp in levels)
+    {
+        int level = kvp.Key;
+        List<NodeData> row = kvp.Value;
 
-            for (int i = 0; i < row.Count; i++)
+        // Optional: sort each level alphabetically for consistent layout
+        row.Sort((a, b) => a.name.CompareTo(b.name));
+
+        float startX = -((row.Count - 1) * horizontalSpacing / 2f);
+
+        for (int i = 0; i < row.Count; i++)
+        {
+            NodeData node = row[i];
+
+            // 👇 Flip the Y to descend top-down
+            float x = startX + i * horizontalSpacing;
+            float y = baseHeight - level * verticalSpacing;
+            Vector3 localPos = new Vector3(x, y, 0); // Set Z to 0 for flat layout
+
+            Vector3 worldPos = transform.TransformPoint(localPos);
+
+            node.nodeRef = CreateNode(node, worldPos);
+
+            if (floatingText != null)
             {
-                Vector3 localPos = new Vector3(
-                    startX + i * horizontalSpacing,
-                    baseHeight + level * verticalSpacing,
-                    2.21f
-                );
-
-                Vector3 worldPos = transform.TransformPoint(localPos);
-
-                row[i].nodeRef = CreateNode(row[i], worldPos);
-
-                if (floatingText != null)
-                {
-                    CreateNodeText(row[i].name, worldPos + new Vector3(0, 0.25f, 0));
-                }
+                CreateNodeText($"{node.name}\n({node.title})", worldPos + new Vector3(0, 0.25f, 0));
             }
-
         }
     }
+}
 
     GraphNode CreateNode(NodeData data, Vector3 pos)
     {
