@@ -114,17 +114,26 @@ public class NodeSpawner : MonoBehaviour
     }
 }
 
-    GraphNode CreateNode(NodeData data, Vector3 pos)
+  GraphNode CreateNode(NodeData data, Vector3 pos)
+{
+    GameObject go = Instantiate(nodePrefab, pos, Quaternion.identity, transform);
+    go.name = $"Node_{data.name}";
+
+    GraphNode gn = go.AddComponent<GraphNode>();
+    gn.nodeName = data.name;
+    gn.neighbors = new List<GraphNode>();
+
+    GraphNodeInfoDisplay display = go.AddComponent<GraphNodeInfoDisplay>();
+    display.myData = data;
+
+    // Optional: ensure node has a collider
+    if (go.GetComponent<Collider>() == null)
     {
-        GameObject go = Instantiate(nodePrefab, pos, Quaternion.identity, transform);
-        go.name = $"Node_{data.name}";
-
-        GraphNode gn = go.AddComponent<GraphNode>();
-        gn.nodeName = data.name;
-        gn.neighbors = new List<GraphNode>();
-
-        return gn;
+        go.AddComponent<SphereCollider>();
     }
+
+    return gn;
+}
 
     void CreateNodeText(string name, Vector3 pos)
     {
