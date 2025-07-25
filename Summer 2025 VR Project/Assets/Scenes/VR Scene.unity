@@ -1341,7 +1341,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &175143215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3912,10 +3912,12 @@ MonoBehaviour:
   csvFile: {fileID: 4900000, guid: d76e18eff60009648b6e238318d7ca9a, type: 3}
   nodePrefab: {fileID: 2036410893851549073, guid: 1189832c62cc3c14883532827226d29b,
     type: 3}
-  floatingText: {fileID: 0}
+  floatingText: {fileID: 6020428598643546638, guid: df5f5419321bdd946a477705d915a4c3,
+    type: 3}
   horizontalSpacing: 0.5
   verticalSpacing: 0.3
   baseHeight: 0
+  fontSize: 0.5
 --- !u!4 &375538109
 Transform:
   m_ObjectHideFlags: 0
@@ -11772,7 +11774,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1083455964
 MonoBehaviour:
   m_ObjectHideFlags: 0

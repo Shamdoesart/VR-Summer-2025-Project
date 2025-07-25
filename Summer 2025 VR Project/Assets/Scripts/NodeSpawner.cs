@@ -7,6 +7,7 @@ using System;
 using UnityEditor.Networking.PlayerConnection;
 using UnityEngine.InputSystem;
 using Unity.Android.Gradle;
+using UnityEngine.XR.Interaction.Toolkit.Utilities.Tweenables.Primitives;
 
 public class NodeSpawner : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class NodeSpawner : MonoBehaviour
     public float horizontalSpacing = 2f; //Left-Right spacing within level
     public float verticalSpacing = 2f; //Distance between levels
     public float baseHeight = 3f; //Overall Y offset
+
+    public float fontSize = 0.2f;
 
 
 
@@ -108,7 +111,7 @@ public class NodeSpawner : MonoBehaviour
 
             if (floatingText != null)
             {
-                CreateNodeText($"{node.name}\n({node.title})", worldPos + new Vector3(0, 0.25f, 0));
+                CreateNodeText(node.name, worldPos);
             }
         }
     }
@@ -135,21 +138,23 @@ public class NodeSpawner : MonoBehaviour
     return gn;
 }
 
-    void CreateNodeText(string name, Vector3 pos)
-    {
-        GameObject labelObj = Instantiate(floatingText, pos, Quaternion.identity, transform);
-        labelObj.name = $"Label_{name}";
+   void CreateNodeText(string name, Vector3 nodePosition)
+{
+    Vector3 labelOffset = new Vector3(0f, 0.2f, 0f); // right of the node
+    GameObject labelObj = Instantiate(floatingText, nodePosition + labelOffset, Quaternion.identity, transform);
+    labelObj.name = $"Label_{name}";
 
-        TMP_Text t = labelObj.GetComponent<TMP_Text>();
-        if (t != null)
-        {
-            t.text = name;
-        }
-        else
-        {
-            Debug.LogWarning("FloatingText prefab lacks TMP_Text.");
-        }
+    TMP_Text t = labelObj.GetComponent<TMP_Text>();
+    if (t != null)
+    {
+        t.text = name;
+        t.fontSize = fontSize; // Smaller size for clarity
     }
+    else
+    {
+        Debug.LogWarning("FloatingText prefab lacks TMP_Text.");
+    }
+}
 
     void BuildConnections()
     {
